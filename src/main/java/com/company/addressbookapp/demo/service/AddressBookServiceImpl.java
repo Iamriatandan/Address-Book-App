@@ -1,6 +1,7 @@
 package com.company.addressbookapp.demo.service;
 
 import com.company.addressbookapp.demo.dto.AddressBookDTO;
+import com.company.addressbookapp.demo.model.AddressBook;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,27 +11,33 @@ import java.util.List;
 public class AddressBookServiceImpl implements AddressBookService{
 
     //Giving all logical code work in service class
-    //Creating list
-    private final List<AddressBookDTO> addressBookDTOList = new ArrayList<>();
+    //Creating list OF AddressBook class
+    private final List<AddressBook> addressBookList = new ArrayList<>();
 
     //Overriding method to add address
     @Override
     public AddressBookDTO addAddress(AddressBookDTO addressBookDTO){
-        addressBookDTOList.add(addressBookDTO);
+        AddressBook addressBook = new AddressBook(addressBookDTO.getName(),addressBookDTO.getEmail(),addressBookDTO.getPhoneNumber());
+        addressBookList.add(addressBook);
         return addressBookDTO;
     }
 
     //Overriding method to display all address
     @Override
     public List<AddressBookDTO> getAllAddresses(){
-        return addressBookDTOList;
+        List<AddressBookDTO> dtoList = new ArrayList<>();
+        for(AddressBook addressBook : addressBookList){
+            dtoList.add(new AddressBookDTO(addressBook.getName(),addressBook.getEmail(),addressBook.getPhoneNumber()));
+        }
+        return dtoList;
     }
 
     //Overriding Method to get address by index
     @Override
     public AddressBookDTO getAddressByIndex(int index){
-        if(index >=0 && index <= addressBookDTOList.size()){
-            return addressBookDTOList.get(index);
+        if(index >=0 && index <= addressBookList.size()){
+            AddressBook addressBook = addressBookList.get(index);
+            return new AddressBookDTO(addressBook.getName(),addressBook.getEmail(),addressBook.getPhoneNumber());
         }
         return null;
     }
@@ -38,8 +45,11 @@ public class AddressBookServiceImpl implements AddressBookService{
     //Overriding Method to update address by index
     @Override
     public AddressBookDTO updateAddress(int index, AddressBookDTO addressBookDTO){
-        if(index >=0 && index <= addressBookDTOList.size()){
-            addressBookDTOList.set(index,addressBookDTO);
+        if(index >=0 && index <= addressBookList.size()){
+            AddressBook addressBook = addressBookList.get(index);
+            addressBook.setName(addressBookDTO.getName());
+            addressBook.setEmail(addressBookDTO.getEmail());
+            addressBook.setPhoneNumber(addressBookDTO.getPhoneNumber());
             return addressBookDTO;
         }
         return null;
@@ -48,6 +58,6 @@ public class AddressBookServiceImpl implements AddressBookService{
     //Overriding method to delete address
     @Override
     public void deleteAddress(int index){
-        addressBookDTOList.remove(index);
+        addressBookList.remove(index);
     }
 }
