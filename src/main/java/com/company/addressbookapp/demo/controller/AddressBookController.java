@@ -1,7 +1,6 @@
 package com.company.addressbookapp.demo.controller;
 import com.company.addressbookapp.demo.dto.AddressBookDTO;
 import com.company.addressbookapp.demo.service.AddressBookService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -11,7 +10,6 @@ import java.util.List;
 public class AddressBookController {
 
     //Loose coupling
-    @Autowired
     private AddressBookService addressBookService;
 
     //Creating constructor
@@ -21,7 +19,7 @@ public class AddressBookController {
 
     //Method to add address
     @PostMapping
-    public ResponseEntity<AddressBookDTO> addAddress(AddressBookDTO addressBookDTO){
+    public ResponseEntity<AddressBookDTO> addAddress(@RequestBody AddressBookDTO addressBookDTO){
         return ResponseEntity.ok(addressBookService.addAddress(addressBookDTO));
     }
 
