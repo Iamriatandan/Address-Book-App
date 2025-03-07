@@ -1,11 +1,11 @@
 package com.company.addressbookapp.demo.dto;
 
 import lombok.*;
-@Data
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressBookDTO {
-    private Long index;
+public class ContactDTO {
+    private Long id;
     private String name;
     private String email;
     private String phoneNumber;

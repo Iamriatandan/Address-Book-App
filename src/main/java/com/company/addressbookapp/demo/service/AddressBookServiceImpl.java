@@ -1,74 +1,73 @@
 package com.company.addressbookapp.demo.service;
-
-import com.company.addressbookapp.demo.dto.AddressBookDTO;
-import com.company.addressbookapp.demo.model.AddressBook;
+import com.company.addressbookapp.demo.dto.ContactDTO;
+import com.company.addressbookapp.demo.model.Contact;
+import com.company.addressbookapp.demo.repository.ContactRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 @Service
 public class AddressBookServiceImpl implements AddressBookService{
     //Giving all logical code work in service class
-    //Creating list OF AddressBook class
     private static final Logger log = LoggerFactory.getLogger(AddressBookServiceImpl.class);
-    private final List<AddressBook> addressBookList = new ArrayList<>();
+    @Autowired
+    ContactRepository contactRepository;
 
-    //Overriding method to add address
+    //Overriding method to save contact
     @Override
-    public AddressBookDTO addAddress(AddressBookDTO addressBookDTO){
-        log.info("Adding new Address: {} ",addressBookDTO);
-        AddressBook addressBook = new AddressBook(addressBookDTO.getName(),addressBookDTO.getEmail(),addressBookDTO.getPhoneNumber());
-        addressBookList.add(addressBook);
-        return addressBookDTO;
+    public ContactDTO addContact(ContactDTO contactDTO){
+        log.info("Adding new Contacts: {} ", contactDTO);
+        Contact contact = new Contact(contactDTO.getName(), contactDTO.getEmail(), contactDTO.getPhoneNumber());
+        Contact savedContact = contactRepository.save(contact);
+        return convertToDTO(savedContact);
     }
 
-    //Overriding method to display all address
+    //Overriding method to display all contacts
     @Override
-    public List<AddressBookDTO> getAllAddresses(){
+    public List<ContactDTO> getAllContacts(){
         log.info("Fetching all address");
-        List<AddressBookDTO> dtoList = new ArrayList<>();
-        for(AddressBook addressBook : addressBookList){
-            dtoList.add(new AddressBookDTO(addressBook.getId(), addressBook.getName(),addressBook.getEmail(),addressBook.getPhoneNumber()));
-        }
-        return dtoList;
+        return contactRepository.findAll().stream().map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    //Overriding Method to get address by index
+    //Overriding Method to get contact by id
     @Override
-    public AddressBookDTO getAddressByIndex(int index){
-        if(index >=0 && index < addressBookList.size()){
-            log.info("Fetching address at index : {} ",index);
-            AddressBook addressBook = addressBookList.get(index);
-            return new AddressBookDTO(addressBook.getId(),addressBook.getName(),addressBook.getEmail(),addressBook.getPhoneNumber());
-        }
-        log.warn("Address at index {} not found ",index);
-        return null;
+    public ContactDTO getContactById(Long id){
+        log.info("Fetching contact with ID: {}",id);
+        Optional<Contact> contact = contactRepository.findById(id);
+        return contact.map(this::convertToDTO).orElse(null);
     }
 
-    //Overriding Method to update address by index
+    //Overriding Method to update  contact by id
     @Override
-    public AddressBookDTO updateAddress(int index, AddressBookDTO addressBookDTO){
-        if(index >=0 && index < addressBookList.size()){
-            AddressBook addressBook = addressBookList.get(index);
-            log.info("Updating address at index{} : {} ",index,addressBookDTO);
-            addressBook.setName(addressBookDTO.getName());
-            addressBook.setEmail(addressBookDTO.getEmail());
-            addressBook.setPhoneNumber(addressBookDTO.getPhoneNumber());
-            return addressBookDTO;
-        }
-        log.warn("Address at index {} not found for update ",index);
-        return null;
+    public ContactDTO updateContact(Long id, ContactDTO contactDTO){
+        log.info("Updating contact with ID{}:{}",id,contactDTO);
+        return contactRepository.findById(id).map(contact->{
+            contact.setName(contactDTO.getName());
+            contact.setEmail(contactDTO.getEmail());
+            contact.setPhoneNumber(contactDTO.getPhoneNumber());
+            Contact updatedContact = contactRepository.save(contact);
+            return convertToDTO(updatedContact);
+        }).orElse(null);
     }
 
-    //Overriding method to delete address
+    //Overriding method to delete contact by id
     @Override
-    public void deleteAddress(int index) {
-        if (index >= 0 && index < addressBookList.size()) { // Fixed condition
-            log.info("Deleting address at index {}", index);
-            addressBookList.remove(index);
-        } else {
-            log.warn("Address at index {} not found for deleting", index);
-        }
+    public void deleteContact(Long id) {
+       if(contactRepository.existsById(id)){
+           log.info("Deleting contact with ID{} :",id);
+           contactRepository.deleteById(id);
+       }
+       else {
+           log.warn("Contact with ID{} not found for deleting",id);
+       }
+    }
+
+    //helper method to convert Entity to DTO
+    private ContactDTO convertToDTO(Contact contact){
+        return new ContactDTO(contact.getId(),contact.getName(), contact.getEmail(),contact.getPhoneNumber());
     }
 }
