@@ -1,5 +1,6 @@
 package com.company.addressbookapp.demo.service;
 import com.company.addressbookapp.demo.dto.ContactDTO;
+import com.company.addressbookapp.demo.exception.ContactNotFoundException;
 import com.company.addressbookapp.demo.model.Contact;
 import com.company.addressbookapp.demo.repository.ContactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,22 +38,23 @@ public class AddressBookServiceImpl implements AddressBookService{
     @Override
     public ContactDTO getContactById(Long id){
         log.info("Fetching contact with ID: {}",id);
-        Optional<Contact> contact = contactRepository.findById(id);
-        return contact.map(this::convertToDTO).orElse(null);
+        Contact contact = contactRepository.findById(id).orElseThrow(() ->
+        new ContactNotFoundException(id));
+        return convertToDTO(contact);
     }
 
     //Overriding Method to update  contact by id
     @Override
     public ContactDTO updateContact(Long id, ContactDTO contactDTO){
         log.info("Updating contact with ID{}:{}",id,contactDTO);
-        return contactRepository.findById(id).map(contact->{
+        Contact contact = contactRepository.findById(id).orElseThrow(()-> new ContactNotFoundException(id));
+
             contact.setName(contactDTO.getName());
             contact.setEmail(contactDTO.getEmail());
             contact.setPhoneNumber(contactDTO.getPhoneNumber());
             Contact updatedContact = contactRepository.save(contact);
             return convertToDTO(updatedContact);
-        }).orElse(null);
-    }
+        }
 
     //Overriding method to delete contact by id
     @Override
@@ -63,6 +65,7 @@ public class AddressBookServiceImpl implements AddressBookService{
        }
        else {
            log.warn("Contact with ID{} not found for deleting",id);
+           throw new ContactNotFoundException(id);
        }
     }
 
