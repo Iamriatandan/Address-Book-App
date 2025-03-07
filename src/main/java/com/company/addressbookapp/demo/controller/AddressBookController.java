@@ -1,6 +1,7 @@
 package com.company.addressbookapp.demo.controller;
 import com.company.addressbookapp.demo.dto.ContactDTO;
 import com.company.addressbookapp.demo.service.AddressBookService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -19,7 +20,7 @@ public class AddressBookController {
 
     //Method to add contact
     @PostMapping
-    public ResponseEntity<ContactDTO> addAddress(@RequestBody ContactDTO contactDTO){
+    public ResponseEntity<ContactDTO> addAddress( @Valid @RequestBody ContactDTO contactDTO){
         return ResponseEntity.ok(addressBookService.addContact(contactDTO));
     }
 
