@@ -20,4 +20,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    // Handling Contact Not Found Exception
+    @ExceptionHandler(ContactNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleContactNotFoundException(ContactNotFoundException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
 }
