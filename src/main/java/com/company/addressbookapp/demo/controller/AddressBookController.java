@@ -1,52 +1,52 @@
 package com.company.addressbookapp.demo.controller;
-import com.company.addressbookapp.demo.dto.AddressBookDTO;
+import com.company.addressbookapp.demo.dto.ContactDTO;
 import com.company.addressbookapp.demo.service.AddressBookService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/address")
+@RequestMapping("/contacts")
 public class AddressBookController {
 
     //Loose coupling
     private AddressBookService addressBookService;
 
     //Creating constructor
-    public AddressBookController(@RequestBody AddressBookService addressBookService){
+    public AddressBookController(AddressBookService addressBookService){
         this.addressBookService=addressBookService;
     }
 
-    //Method to add address
+    //Method to add contact
     @PostMapping
-    public ResponseEntity<AddressBookDTO> addAddress(@RequestBody AddressBookDTO addressBookDTO){
-        return ResponseEntity.ok(addressBookService.addAddress(addressBookDTO));
+    public ResponseEntity<ContactDTO> addAddress(@RequestBody ContactDTO contactDTO){
+        return ResponseEntity.ok(addressBookService.addContact(contactDTO));
     }
 
-    //Method to get all address
+    //Method to get all contact
     @GetMapping
-    public ResponseEntity<List<AddressBookDTO>> getAllAddress(){
-        return ResponseEntity.ok(addressBookService.getAllAddresses());
+    public ResponseEntity<List<ContactDTO>> getAllAddress(){
+        return ResponseEntity.ok(addressBookService.getAllContacts());
     }
 
-    //Method to get address by index
-    @GetMapping("/{index}")
-    public ResponseEntity<AddressBookDTO> getAddressByIndex(@PathVariable int index){
-        AddressBookDTO addressBookDTO = addressBookService.getAddressByIndex(index);
-        return addressBookDTO !=null? ResponseEntity.ok(addressBookDTO):ResponseEntity.notFound().build();
+    //Method to get contact by id
+    @GetMapping("/{id}")
+    public ResponseEntity<ContactDTO> getContactById(@PathVariable Long id){
+        ContactDTO contactDTO = addressBookService.getContactById(id);
+        return contactDTO !=null? ResponseEntity.ok(contactDTO):ResponseEntity.notFound().build();
     }
 
-    //Method to update address by index
-    @PutMapping("/{index}")
-    public ResponseEntity<AddressBookDTO> updateAdressByIndex(@PathVariable int index,@RequestBody AddressBookDTO addressBookDTO){
-        AddressBookDTO updateAddress = addressBookService.updateAddress(index,addressBookDTO);
+    //Method to update contact by id
+    @PutMapping("/{id}")
+    public ResponseEntity<ContactDTO> updateContact(@PathVariable Long id, @RequestBody ContactDTO contactDTO){
+        ContactDTO updateAddress = addressBookService.updateContact(id, contactDTO);
         return updateAddress!=null?ResponseEntity.ok(updateAddress):ResponseEntity.notFound().build();
     }
 
-    //Method to delete address by index
-    @DeleteMapping("/{index}")
-    public ResponseEntity<Void> deleteAddress(@PathVariable int index){
-        addressBookService.deleteAddress(index);
+    //Method to delete contact by id
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteContact(@PathVariable Long id){
+        addressBookService.deleteContact(id);
         return ResponseEntity.noContent().build();
     }
 }
